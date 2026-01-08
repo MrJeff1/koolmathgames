@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kool Proxy - DashBoard</title>
+  <link rel="icon" type="image/png" href="https://codehs.com/uploads/4928ba975053bd362620fa73767040bf">
+
+  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8750716083189060" crossorigin="anonymous"></script>
+  <!--<script src="https://static1.codehs.com/cdn/chsfirebase/latest/chsfirebase.min.js"></script>-->
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      padding-bottom: 40px;
+      color: #e0f0ff;
+      background: linear-gradient(-45deg, #0044cc, #3366ff, #0033cc, #66ccff);
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 60px;
+      color: #e6ffe6;
+      text-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    #particles-js {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .dashboard-card {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 30px 50px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(10px);
+      margin-top: 25px;
+      transition: 0.3s ease;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+    }
+
+    h2 {
+      font-size: 38px;
+      color: #0044cc;
+      margin-bottom: 15px;
+    }
+
+    #gamesButton, .link-button {
+      display: inline-block;
+      margin: 10px 8px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #0066ff, #3399ff);
+      color: #fff;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    #gamesButton:hover, .link-button:hover {
+      background: linear-gradient(135deg, #00ffff, #33ffff);
+      transform: scale(1.08);
+      box-shadow: 0 0 20px #00ff88;
+    }
+
+    /* Daily Message Row */
+    .daily-message {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 20px;
+    }
+
+    #editButton {
+      background: linear-gradient(135deg, #00cc66, #33ff99);
+      padding: 8px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,255,128,0.3);
+      transition: all 0.3s ease;
+    }
+
+    #editButton:hover {
+      background: linear-gradient(135deg, #00ff99, #66ffcc);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #00ff99;
+    }
+
+    #gamesSection {
+      display: none;
+      margin-top: 40px;
+      min-height: 100vh;
+      padding-bottom: 30px;
+      color: #eaffea;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #gameFrame {
+      width: 95%;
+      height: 80vh;
+      margin-top: 20px;
+      border: none;
+      border-radius: 12px;
+      display: none;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+    }
+
+    #loader {
+      display: none;
+      border: 8px solid rgba(255, 255, 255, 0.3);
+      border-top: 8px solid #00ff88;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #loaderText {
+      display: none;
+      font-size: 20px;
+      color: #e6ffe6;
+      animation: float 2s ease-in-out infinite;
+      font-weight: bold;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .credits, .small-credits {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #ccffcc;
+    }
+
+    .small-credits { font-size: 12px; }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 500px;
+      color: #333;
+    }
+
+    .close-button {
+      float: right;
+      font-size: 26px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .close-button:hover {
+      color: #000;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🧑‍💻 Kool Proxy 🧑‍💻</h1>
+
+  <div class="dashboard-card">
+    <a href="#games" id="gamesButton">🎮 Play Games</a>
+    <a href="javascript:void(0)" id="rulesButton" class="link-button">📜 Rules</a>
+    <a href="https://koolmathgames.site/" class="link-button">⬅ Home</a>
+    <!--<a href="javascript:void(0)" id="donationsButton" class="link-button">💵 Top Donations</a>-->
+
+    <div class="daily-message">
+      <span>Daily Message:</span>
+      <span id="db-value" style="font-weight:bold; color:#fff;">Do Your Work!</span>
+      <button id="editButton">✏ Edit</button>
+    </div>
+
+    <span>Your Rank:</span>
+    <span id="rank-value" style="font-weight:bold; color:#fff;">User</span>
+
+    <!--<div class="credits">
+      Made by <strong>Sheldi Pierre and riley</strong> | Visit the white side cafeteria in 5th period.
+    </div>
+    <div class="small-credits">&copy; 2025 Kool Proxy - Made by Sheldi, and Riley</div>
+    <div class="small-credits">Email: nb998008470@northbabylonschools.net</div>
+    <a class="small-credits" href="/more">My Creations 🧑‍💻</a> -
+    <a class="small-credits" href="/credits">Credits</a> <br>-->
+    <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-8750716083189060"
+      data-ad-slot="7956244502"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+  </div>
+
+  <div id="gamesSection">
+    <h2 style="color:#fff;">🎮 Games Zone</h2>
+    <a href="javascript:void(0)" onclick="openGame('https://britannica.tk/')" class="link-button"><strong>RammerHead (Recomended for proxy)</strong></a>
+    <a href="javascript:void(0)" onclick="openGame('https://petezah.easynetti.biz.cdn.cloudflare.net/')" class="link-button"><em>Petezah (doesn't work)</em> <!--(Recommended)--></a>
+    <a href="javascript:void(0)" onclick="window.open('http://89.58.60.170:8080/', '_blank')" class="link-button">US5 Proxy</a>
+    <a href="javascript:void(0)" onclick="window.open('https://interstelar.koolmathgames.site/', '_blank')" class="link-button"><strong>Interstellar</strong></a>
+    <a href="javascript:void(0)" onclick="openGame('https://secured.freetls.fastly.net/')" class="link-button"> Secured Proxy</a>
+    <a href="javascript:void(0)" onclick="window.open('https://gnmath-16836393.codehs.me/index.html', '_blank')" class="link-button"><strong>gn-math (Recomended for games)</strong></a>
+    <a href="javascript:void(0)" onclick="openGame('https://algebra.rest/')" class="link-button"><em> algebra.rest (doesn't work)</em></a>
+
+    <div id="loader"></div>
+    <div id="loaderText">WAIT, it's loading :)</div>
+    <iframe id="gameFrame"></iframe>
+
+    <div style="margin-top:15px;">
+      <a href="#" class="link-button" id="backDashboard">⬅ Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Rules Modal -->
+  <div id="rulesModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="closeModal">&times;</span>
+      <h2>🌟 Kool Proxy Rules 🌟</h2>
+      <ul style="list-style:none; padding:0;">
+        <li>1. Do NOT share this with others</li>
+        <li>2. Do NOT copy</li>
+        <li>3. Have FUN!!!</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Donations Modal
+  <div id="donationsModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="closeModal2">&times;</span>
+      <h2>💵 Top Donations 💵</h2>
+      <ul style="list-style:none; padding:0;" id="donationsList">
+        <li>1. Erix - $20</li>
+      </ul>
+    </div>
+  </div>-->
+
+  <div id="particles-js"></div>
+
+  <script>
+    /*
+    <a href="javascript:void(0)" onclick="openGame('https://secured.freetls.fastly.net/')" class="link-button"> Secured Proxy</a>
+    <a href="javascript:void(0)" onclick="window.open('https://gn-math-16836393.codehs.me/index.html', '_blank')" class="link-button"><strong>gn-math (Recomended for games)</strong></a>
+    <a href="javascript:void(0)" onclick="openGame('https://algebra.rest/')" class="link-button"><em> algebra.rest (doesn't work)</em></a> */
+    const dashboardCard = document.querySelector('.dashboard-card');
+    const gamesSection = document.getElementById('gamesSection');
+    const iframe = document.getElementById('gameFrame');
+    const loader = document.getElementById('loader');
+    const loaderText = document.getElementById('loaderText');
+    if (window.location.hash.substring(1) === "games") {
+      dashboardCard.style.display = 'none';
+      gamesSection.style.display = 'block';
+    }
+
+    const game = new URLSearchParams(window.location.search).get("game");
+    switch (game) {
+      case "rammerhead": openGame('https://britannica.tk/');
+      //case "petezah": openGame('https://petezah.easynetti.biz.cdn.cloudflare.net/');
+      case "us5": window.open('http://89.58.60.170:8080/', '_blank');
+      case "secured": openGame('https://secured.freetls.fastly.net/');
+      case "secured proxy": openGame('https://secured.freetls.fastly.net/');
+      case "securedproxy": openGame('https://secured.freetls.fastly.net/');
+      case "gn-math": window.open('https://math-gn-16836393.codehs.me/index.html', '_blank');
+      case "gnmath": window.open('https://math-gn-16836393.codehs.me/index.html', '_blank');
+      //case "algebra": openGame('https://algebra.rest/');
+      //case "algebrarest": openGame('https://algebra.rest/');
+      case "interstellar": window.open('https://interstelar.koolmathgames.site/', '_blank');
+    }
+
+    /*firebase.initialize({ projectName: 'koolproxy' });
+    firebase.database().ref().on('value', (result) => {
+      document.querySelector('#db-value').innerHTML = result;
+    });
+
+    /* firebase.database().ref('rank').on('value', (rankR) => {
+        document.querySelector('#rank-value').innerHTML = rankR || "User";
+    }); */
+    let rankR = localStorage.getItem('username');
+    document.querySelector("#rank-value").innerHTML = rankR || "Member";
+
+    // Reference to the users node
+    //const usersRef = firebase.database().ref('users');
+
+    // Load leaderboard into the modal
+    /*function loadLeaderboard() {
+      const listEl = document.getElementById('donationsList');
+      listEl.innerHTML = 'Loading...';
+
+      usersRef.on('value', function(snapshot) {
+          const data = snapshot || {};
+          const arr = Object.keys(data).map(k => ({ name: data[k].name, amount: data[k].amount }));
+          arr.sort((a, b) => b.amount - a.amount);
+
+          listEl.innerHTML = '';
+          if (arr.length === 0) {
+              listEl.innerHTML = '<li>No donations yet.</li>';
+              return;
+          }
+
+          arr.forEach((u, i) => {
+              const li = document.createElement('li');
+              li.textContent = `${i+1}. ${u.name} — $${u.amount}`;
+              listEl.appendChild(li);
+          });
+      }, function(error) {
+          listEl.innerHTML = '<li>Error loading leaderboard.</li>';
+          console.error(error);
+      });
+    }*/
+
+    document.getElementById('editButton').addEventListener('click', () => {
+      let rankR = localStorage.getItem('username');
+      if (rankR === "Owner") {
+        editmessage();
+      } else {
+          const password = prompt('Enter password:');
+          if (password === "kooladmin123") {
+            editmessage();
+          } else {
+            console.log("Enter a message!")
+            alert("Wrong Password!");
+          }
+      }
+    });
+
+    function editmessage() {
+        const value = prompt('Enter New Message:');
+        if (value) {
+            //firebase.database().ref().set(value);
+            document.querySelector('#db-value').innerHTML = value;
+        } else {
+            console.log("Enter a message!")
+            alert("Enter a message!")
+        }
+    }
+
+    document.getElementById('gamesButton').addEventListener('click', () => {
+      dashboardCard.style.display = 'none';
+      gamesSection.style.display = 'block';
+    });
+
+    document.getElementById('backDashboard').addEventListener('click', () => {
+      iframe.src = '';
+      iframe.style.display = 'none';
+      loader.style.display = 'none';
+      loaderText.style.display = 'none';
+      gamesSection.style.display = 'none';
+      dashboardCard.style.display = 'block';
+    });
+
+    function openGame(url) {
+      // var url = "https://petezah.easynetti.biz.cdn.cloudflare.net/";
+      // var url = "https://www.example.com/";
+      // Validate URL
+      var win = window.open();
+      // Set title and icon for the new window
+      win.document.title = "My Drive - Google Drive";
+      var link = win.document.createElement('link');
+      link.rel = "icon";
+      link.href = "https://cdn.iconscout.com/icon/free/png-256/free-google-drive-logo-icon-download-in-svg-png-gif-file-formats--new-logos-pack-icons-2476481.png?f=webp&w=256";
+      win.document.head.appendChild(link);
+
+      var iframe = win.document.createElement('iframe');
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      iframe.style.border = "none";
+      iframe.src = url;
+      iframe.style.position = "fixed";
+      iframe.style.inset = "0px";
+      iframe.style.outline = "none";
+      win.document.body.appendChild(iframe);
+
+      // Attempt to close the original tab
+      // window.close();
+    }
+
+    const rulesButton = document.getElementById('rulesButton');
+    const rulesModal = document.getElementById('rulesModal');
+    const closeModal = document.getElementById('closeModal');
+    const donationsButton = document.getElementById('donationsButton');
+    const donationsModal = document.getElementById('donationsModal');
+    const closeModal2 = document.getElementById('closeModal2');
+
+    rulesButton.onclick = () => (rulesModal.style.display = 'block');
+    donationsButton.onclick = () => (donationsModal.style.display = 'block');
+    closeModal.onclick = () => (rulesModal.style.display = 'none');
+    closeModal2.onclick = () => (donationsModal.style.display = 'none');
+
+    window.onclick = (event) => {
+      if (event.target === rulesModal) rulesModal.style.display = 'none';
+      if (event.target === donationsModal) donationsModal.style.display = 'none';
+    };
+
+    // particles.js background
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 100,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#00ff88"
+        },
+        "shape": {
+          "type": "circle",
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          }
+        },
+        "size": {
+          "value": 5,
+          "random": true,
+          "anim": {
+            "enable": true,
+            "speed": 2,
+            "size_min": 0.1,
+            "sync": false
+          }
+        },
+        "move": {
+          "enable": true,
+          "speed": 1,
+          "direction": "none",
+          "random": true,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false,
+          "attract": {
+            "enable": true,
+            "rotateX": 600,
+            "rotateY": 1200
+          }
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          }
+        }
+      }
+    });
+    /*function logout() {
+      localStorage.removeItem('accessGranted');
+      localStorage.removeItem('username');
+      window.location.href = 'https://sheldi.online/';
+    }*/
+    //document.getElementById('donationsModal').addEventListener('show', loadLeaderboard);
+    //loadLeaderboard(); // optional: load immediately on page load
+  </script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+</html>

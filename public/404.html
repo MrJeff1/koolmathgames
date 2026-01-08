@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>404 – Page Not Found</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      padding-bottom: 40px;
+      color: #e0f0ff;
+      background: linear-gradient(-45deg, #0044cc, #3366ff, #0033cc, #66ccff);
+      background-size: 400% 400%;
+      animation: gradientShift 12s ease infinite;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 { margin-top: 60px; font-size: 72px; color: #e6ffe6; text-shadow: 0 0 15px rgba(0,0,0,0.5); }
+    h2 { margin-top: -10px; font-size: 28px; font-weight: 600; color: #ccffcc; }
+
+    .dashboard-card {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 30px 50px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(10px);
+      margin-top: 30px;
+      transition: 0.3s ease;
+      animation: fadeIn 0.6s ease;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .dashboard-card p { font-size: 18px; color: #e0f0ff; margin-bottom: 25px; }
+    .error-code { font-size: 14px; opacity: 0.8; margin-top: 15px; }
+
+    .link-button {
+      display: inline-block;
+      margin: 10px 8px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #0066ff, #3399ff);
+      color: #fff;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .link-button:hover {
+      background: linear-gradient(135deg, #00ffff, #33ffff);
+      transform: scale(1.08);
+      box-shadow: 0 0 20px #00ff88;
+    }
+
+    footer { margin-top: 40px; font-size: 14px; color: #ccffcc; }
+    footer a { color: #00ffcc; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 52px; }
+      h2 { font-size: 22px; }
+      .dashboard-card { padding: 20px 25px; }
+      .link-button { font-size: 16px; padding: 10px 20px; }
+    }
+
+    /* Pixel particles */
+    .pixel {
+      position: fixed;
+      top: -10px;              /* start ABOVE the screen */
+      width: 6px;
+      height: 6px;
+      background: #7CFC00;
+      opacity: 0.8;
+      animation: fall linear forwards;
+      z-index: 0;
+    }
+
+    @keyframes fall {
+      from {
+        top: -10px;
+        opacity: 1;
+      }
+      to {
+        top: 110vh;            /* fall past bottom */
+        opacity: 0;
+      }
+    }
+
+    /* Creeper Easter Egg - image */
+    #mc-easter-egg {
+      display: none;
+      margin: 25px auto 0;
+      width: 120px;
+      height: 120px;
+      background: url("https://upload.wikimedia.org/wikipedia/commons/f/fb/Minecraft-creeper-face.jpg") no-repeat center / contain;
+      cursor: default;
+      animation: popIn 0.6s ease;
+    }
+
+    @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <h1>404</h1>
+  <h2>Page Not Found</h2>
+
+  <div class="dashboard-card">
+    <p>This page doesn’t exist, was moved, or the URL is incorrect.</p>
+
+    <a class="link-button" href="https://koolmathgames.site/">⬅ Back to Home</a>
+
+    <div class="error-code">Error 404 · Nothing matches the given URI</div>
+
+    <div id="redirect-text" class="error-code">
+      Redirecting to home in <span id="countdown">10</span>s…
+      <br />
+      <button id="cancelRedirect" class="link-button" style="margin-top:10px;font-size:14px;padding:6px 14px;">
+        Cancel Redirect
+      </button>
+    </div>
+
+    <div id="mc-easter-egg" aria-hidden="true"></div>
+  </div>
+
+  <!-- Cloudflare Web Analytics -->
+  <script
+    defer
+    src="https://static.cloudflareinsights.com/beacon.min.js"
+    data-cf-beacon='{"token":"2ce4e054f86844798544933a246b29d2"}'
+    crossorigin="anonymous">
+  </script>
+
+  <script>
+  let pixels = false;
+    document.addEventListener("DOMContentLoaded", () => {
+      /* Auto Redirect Countdown */
+      let timeLeft = 10;
+      const countdownEl = document.getElementById("countdown");
+      const cancelBtn = document.getElementById("cancelRedirect");
+
+      const redirectTimer = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(redirectTimer);
+          window.location.href = "https://koolmathgames.site/";
+        }
+      }, 1000);
+
+      cancelBtn.addEventListener("click", () => {
+        clearInterval(redirectTimer);
+        document.getElementById("redirect-text").innerHTML =
+          "Redirect cancelled. You are safe… for now 👀";
+      });
+
+      /* Pixel Block Animation */
+      setInterval(() => {
+        if (pixels) {
+          const p = document.createElement("div");
+          p.className = "pixel";
+          p.style.left = Math.random() * window.innerWidth + "px";
+          p.style.animationDuration = 3 + Math.random() * 3 + "s";
+          document.body.appendChild(p);
+          setTimeout(() => p.remove(), 6000);
+        }
+      }, 180);
+
+      /* Minecraft Dev Easter Egg - Konami Code */
+      const code = [
+        "ArrowUp","ArrowUp","ArrowDown","ArrowDown",
+        "ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"
+      ];
+      let index = 0;
+
+      window.addEventListener("keydown", e => {
+        if (e.key === code[index]) {
+          index++;
+          if (index === code.length) {
+            document.getElementById("mc-easter-egg").style.display = "block";
+            console.log("%cCreeper?", "color:lime;font-size:24px;font-weight:bold");
+            index = 0;
+            pixels = true;
+          }
+        } else {
+          index = 0;
+        }
+      });
+
+      console.log("%cHint: Try the Konami Code 😉", "color:#00ff88;font-size:14px");
+    });
+  </script>
+</body>
+</html>

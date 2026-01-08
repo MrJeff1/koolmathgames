@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>KoolChat+</title>
+<style>
+body{margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#0044cc,#3366ff,#66ccff);background-size:400% 400%;animation:gradientShift 12s ease infinite;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow-x:hidden;padding:20px}@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}.container{width:95%;max-width:900px;height:90vh;background:rgb(255 255 255 / .12);backdrop-filter:blur(10px);border:1px solid rgb(255 255 255 / .3);border-radius:20px;display:flex;flex-direction:column;box-shadow:0 0 25px rgb(0 0 0 / .4);animation:fadeIn .5s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}header{padding:10px;text-align:center;background:rgb(255 255 255 / .1);border-bottom:1px solid rgb(255 255 255 / .2);border-radius:20px 20px 0 0;position:relative}h1{margin:5px;font-size:26px}h2{margin:10px 0;font-size:22px}#chatBox{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;scroll-behavior:smooth}.msg{margin:6px 0;padding:10px 14px;border-radius:10px;max-width:70%;word-wrap:break-word;font-size:15px}.msg.self{align-self:flex-end;background:rgb(0 255 128 / .3)}.msg.other{align-self:flex-start;background:rgb(255 255 255 / .2)}.msg time{display:block;font-size:11px;color:#ccc;margin-top:4px;text-align:right}.msg.system{align-self:center;color:#ccc;font-style:italic;background:rgb(255 255 255 / .15);max-width:90%}.system em{color:#ff0}.file-attachment{margin-top:8px;padding:8px;background:rgb(0 0 0 / .3);border-radius:6px;display:inline-block}.file-preview{max-width:200px;max-height:200px;margin-top:8px;border-radius:6px;cursor:pointer}.download-btn{padding:6px 12px;background:#00cc66;border:none;border-radius:4px;color:#fff;cursor:pointer;margin-top:4px;font-size:13px;display:inline-block}.download-btn:hover{background:#00ff99}footer{padding:10px;display:flex;gap:8px;align-items:center;border-top:1px solid rgb(255 255 255 / .2)}#msgInput{flex:1;padding:10px;border:none;border-radius:8px;font-size:16px}#sendBtn,#clearBtn,#fileBtn{padding:10px 16px;background:linear-gradient(135deg,#00cc66,#00ff99);border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer;transition:.3s}#sendBtn:hover,#clearBtn:hover,#fileBtn:hover{background:linear-gradient(135deg,#00ff99,#33ffcc)}#accountPanel{position:absolute;top:0;left:0;width:100%;height:100%;background:rgb(0 0 0 / .8);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1000}.panelBox{background:#fff;color:#000;border-radius:12px;padding:20px;width:90%;max-width:420px;max-height:80vh;overflow-y:auto}.panelBox button{margin-top:10px;padding:8px 16px;border:none;border-radius:6px;cursor:pointer;background:#007bff;color:#fff;width:100%}.panelBox button:hover{background:#0056b3}.panelBox input,.panelBox textarea{padding:10px;width:calc(100% - 20px);border-radius:6px;border:1px solid #ccc;margin-top:8px;font-family:inherit}#friendsList{padding:0;margin:10px 0}#friendsList li{margin:4px 0;list-style:none;padding:8px;background:#f0f0f0;border-radius:4px}.auth-form{padding:20px;text-align:center}.auth-form input,.auth-form textarea{padding:10px;width:80%;border-radius:8px;border:1px solid #ccc;margin:8px 0;display:block;margin-left:auto;margin-right:auto}.auth-form button{padding:10px 25px;border:none;border-radius:8px;background:#00cc66;color:#fff;font-weight:bold;cursor:pointer;margin:10px 5px}.auth-form button:hover{background:#00ff99}.auth-form button.secondary{background:#666}.auth-form button.secondary:hover{background:#888}.auth-msg{color:#ffcc00;margin:10px 0;min-height:20px}@media(max-width:600px){h1{font-size:22px}#msgInput{font-size:14px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN/SIGNUP SCREEN -->
+<div class="container" id="authContainer">
+  <header><h1>💬 Welcome to KoolChat+</h1></header>
+  <div class="auth-form">
+    <h2 id="authTitle">Sign In</h2>
+    <input id="authUsername" placeholder="Username" type="text">
+    <input id="authPassword" placeholder="Password" type="password">
+    <textarea id="authDesc" placeholder="Description (optional for signup)" style="display:none;height:60px;"></textarea>
+    <p class="auth-msg" id="authMsg"></p>
+    <button onclick="handleAuth()" id="authBtn">Sign In</button>
+    <button onclick="toggleAuthMode()" class="secondary" id="toggleBtn">Create Account</button>
+  </div>
+</div>
+
+<!-- CHAT SCREEN -->
+<div class="container" id="chatContainer" style="display:none;">
+  <header>
+    <h1 id="chatTitle">💬 KoolChat — Global</h1>
+    <button onclick="openAccountPanel()" style="position:absolute;right:20px;top:20px;background:rgb(255 255 255 / .2);border:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:#fff;font-size:18px;">👤</button>
+  </header>
+  <div id="chatBox"><div class="msg system"><em>🔔 Loading messages...</em></div></div>
+  <footer>
+    <input id="msgInput" placeholder="Type message..." onkeydown="if(event.key==='Enter'){sendMessage();event.preventDefault();}">
+    <button id="fileBtn" onclick="document.getElementById('fileInput').click()">📎</button>
+    <input type="file" id="fileInput" style="display:none" onchange="uploadFile(event)">
+    <button id="sendBtn" onclick="sendMessage()">Send</button>
+    <button id="clearBtn" onclick="clearChat()">🗑</button>
+  </footer>
+</div>
+
+<!-- ACCOUNT PANEL -->
+<div id="accountPanel">
+  <div class="panelBox">
+    <h2>Account</h2>
+    <p><b id="accName"></b></p>
+    <p id="accDesc"></p>
+    <hr>
+    <h3>Add Friend</h3>
+    <input id="addUserInput" placeholder="Friend's username">
+    <button onclick="addFriend()">Add Friend</button>
+    <h3>Friends List</h3>
+    <ul id="friendsList"></ul>
+    <hr>
+    <button onclick="shareProfile()">Share Profile</button>
+    <button onclick="logout()" style="background:#dc3545;">Logout</button>
+    <button onclick="closeAccountPanel()">Close</button>
+  </div>
+</div>
+
+<script src="https://static1.codehs.com/cdn/chsfirebase/latest/chsfirebase.min.js"></script>
+<script>
+// Global variables
+var currentUser = null;
+var currentDesc = '';
+var currentChat = 'global';
+var bannedUsers = {};
+var isSignupMode = false;
+var refreshInterval = null;
+var lastMessageCount = 0;
+
+var adminUsers = ["sheldi", "ayyan", "riley", "OWNER"];
+
+// Initialize Firebase after script loads
+window.addEventListener('load', function() {
+  firebase.initialize({ projectName: 'koolchat_final_v1' });
+
+  // Check for saved login
+  var savedUser = localStorage.getItem('koolchat_user');
+  var savedPass = localStorage.getItem('koolchat_pass');
+  var savedDesc = localStorage.getItem('koolchat_desc');
+
+  if(savedUser && savedPass){
+    document.getElementById('authUsername').value = savedUser;
+    document.getElementById('authPassword').value = savedPass;
+    currentDesc = savedDesc || 'No description.';
+    // Auto login
+    setTimeout(function(){
+      signIn(savedUser, atob(savedPass), true);
+    }, 500);
+  }
+});
+
+// --- AUTH MODE TOGGLE ---
+function toggleAuthMode(){
+  isSignupMode = !isSignupMode;
+  var title = document.getElementById('authTitle');
+  var btn = document.getElementById('authBtn');
+  var toggle = document.getElementById('toggleBtn');
+  var desc = document.getElementById('authDesc');
+
+  if(isSignupMode){
+    title.innerText = 'Create Account';
+    btn.innerText = 'Sign Up';
+    toggle.innerText = 'Already have an account?';
+    desc.style.display = 'block';
+  } else {
+    title.innerText = 'Sign In';
+    btn.innerText = 'Sign In';
+    toggle.innerText = 'Create Account';
+    desc.style.display = 'none';
+  }
+  document.getElementById('authMsg').innerText = '';
+}
+
+// --- HANDLE AUTH ---
+function handleAuth(){
+  var username = document.getElementById('authUsername').value.trim();
+  var password = document.getElementById('authPassword').value.trim();
+  var desc = document.getElementById('authDesc').value.trim() || 'No description.';
+  var msg = document.getElementById('authMsg');
+
+  if(!username || !password){
+    msg.innerText = '⚠️ Please enter username and password!';
+    return;
+  }
+
+  if(username.length < 3){
+    msg.innerText = '⚠️ Username must be at least 3 characters!';
+    return;
+  }
+
+  if(password.length < 6){
+    msg.innerText = '⚠️ Password must be at least 6 characters!';
+    return;
+  }
+
+  if(isSignupMode){
+    signUp(username, password, desc);
+  } else {
+    signIn(username, password, false);
+  }
+}
+
+// --- SIGN UP ---
+function signUp(username, password, desc){
+  var msg = document.getElementById('authMsg');
+
+  firebase.database().ref('users/' + username).on('value', function(result){
+    var userData = result;
+
+    if(userData && userData.password){
+      msg.innerText = '⚠️ Username already exists!';
+      return;
+    }
+
+    // Check if banned
+    firebase.database().ref('bannedUsers/' + username).on('value', function(banResult){
+      var isBanned = banResult;
+
+      if(isBanned){
+        msg.innerText = '❌ This username is banned!';
+        return;
+      }
+
+      // Create account
+      var hashedPass = btoa(password);
+      firebase.database().ref('users/' + username).set({
+        password: hashedPass,
+        desc: desc,
+        createdAt: Date.now(),
+        friends: {}
+      });
+
+      msg.innerText = '✅ Account created! Signing you in...';
+      msg.style.color = '#00ff99';
+
+      // Save to localStorage
+      localStorage.setItem('koolchat_user', username);
+      localStorage.setItem('koolchat_pass', hashedPass);
+      localStorage.setItem('koolchat_desc', desc);
+
+      setTimeout(function() {
+        currentUser = username;
+        currentDesc = desc;
+        showChat();
+      }, 1000);
+    });
+  });
+}
+
+// --- SIGN IN ---
+function signIn(username, password, isAuto){
+  var msg = document.getElementById('authMsg');
+
+  firebase.database().ref('users/' + username).on('value', function(result){
+    var userData = result;
+
+    if(!userData || !userData.password){
+      msg.innerText = '⚠️ Account not found!';
+      if(isAuto){
+        localStorage.removeItem('koolchat_user');
+        localStorage.removeItem('koolchat_pass');
+        localStorage.removeItem('koolchat_desc');
+      }
+      return;
+    }
+
+    var hashedPass = btoa(password);
+    if(userData.password !== hashedPass){
+      msg.innerText = '⚠️ Incorrect password!';
+      if(isAuto){
+        localStorage.removeItem('koolchat_user');
+        localStorage.removeItem('koolchat_pass');
+        localStorage.removeItem('koolchat_desc');
+      }
+      return;
+    }
+
+    // Check if banned
+    firebase.database().ref('bannedUsers/' + username).on('value', function(banResult){
+      var isBanned = banResult;
+
+      if(isBanned){
+        msg.innerText = '❌ You are banned from this chat!';
+        return;
+      }
+
+      if(!isAuto){
+        msg.innerText = '✅ Logging in...';
+        msg.style.color = '#00ff99';
+      }
+
+      currentUser = username;
+      currentDesc = userData.desc || 'No description.';
+
+      // Save to localStorage
+      if(!isAuto){
+        localStorage.setItem('koolchat_user', username);
+        localStorage.setItem('koolchat_pass', hashedPass);
+        localStorage.setItem('koolchat_desc', currentDesc);
+      }
+
+      setTimeout(function() {
+        showChat();
+      }, isAuto ? 0 : 500);
+    });
+  });
+}
+
+// --- SHOW CHAT ---
+function showChat(){
+  document.getElementById('authContainer').style.display = 'none';
+  document.getElementById('chatContainer').style.display = 'flex';
+
+  sendSystemMessage(currentUser + ' joined the chat!');
+
+  // Load banned users
+  firebase.database().ref('bannedUsers').on('value', function(result){
+    bannedUsers = result || {};
+  });
+
+  loadMessages();
+
+  // Start auto-refresh every 2 seconds
+  if(refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(function(){
+    loadMessages();
+  }, 2000);
+}
+
+// --- LOGOUT ---
+function logout(){
+  if(currentUser){
+    sendSystemMessage(currentUser + ' left the chat!');
+  }
+
+  // Clear refresh interval
+  if(refreshInterval) clearInterval(refreshInterval);
+
+  // Clear localStorage
+  localStorage.removeItem('koolchat_user');
+  localStorage.removeItem('koolchat_pass');
+  localStorage.removeItem('koolchat_desc');
+
+  currentUser = null;
+  currentDesc = '';
+  document.getElementById('authContainer').style.display = 'flex';
+  document.getElementById('chatContainer').style.display = 'none';
+  document.getElementById('authUsername').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authDesc').value = '';
+  document.getElementById('authMsg').innerText = '';
+  document.getElementById('authMsg').style.color = '#ffcc00';
+  closeAccountPanel();
+}
+
+// --- SEND MESSAGE ---
+function sendMessage(){
+  var input = document.getElementById('msgInput');
+  var text = input.value.trim();
+  if(!text || !currentUser) return;
+
+  // --- OWNER COMMANDS ---
+  var isAdmin = adminUsers.includes(currentUser);
+  if(isAdmin){
+    var banMatch = text.match(/^\/ban\s+(\w+)$/i);
+    var unbanMatch = text.match(/^\/unban\s+(\w+)$/i);
+    var kickMatch = text.match(/^\/kick\s+(\w+)$/i);
+
+    if(banMatch){
+      var target = banMatch[1];
+      firebase.database().ref('bannedUsers/' + target).set(true);
+      sendSystemMessage(target + ' has been banned by OWNER!');
+
+      // Delete messages
+      firebase.database().ref('chats/' + currentChat).on('value', function(result){
+        var messages = result || {};
+
+        for(var key in messages){
+          if(messages[key].user === target){
+            firebase.database().ref('chats/' + currentChat + '/' + key).set(null);
+          }
+        }
+      });
+
+      kickUser(target);
+      input.value = '';
+      return;
+    }
+
+    if(unbanMatch){
+      var target = unbanMatch[1];
+      if (target === "*") {
+        firebase.database().ref('bannedUsers').set(null);
+        sendSystemMessage('Everyone has been unbanned by OWNER!');
+      } else {
+        firebase.database().ref('bannedUsers/' + target).set(null);
+        sendSystemMessage(target + ' has been unbanned by OWNER!');
+      }
+      input.value = '';
+      return;
+    }
+
+    if(kickMatch){
+      var target = kickMatch[1];
+      firebase.database().ref('chats/' + currentChat).on('value', function(result){
+        var messages = result || {};
+
+        for(var key in messages){
+          if(messages[key].user === target){
+            firebase.database().ref('chats/' + currentChat + '/' + key).set(null);
+          }
+        }
+        sendSystemMessage(target + ' has been kicked by OWNER!');
+      });
+      input.value = '';
+      return;
+    }
+  }
+
+  // Check if banned
+  if(bannedUsers[currentUser]){
+    alert("❌ You are banned from sending messages.");
+    return;
+  }
+
+  // Send message
+  var key = Date.now().toString() + '_' + Math.random().toString(36).substr(2, 9);
+  firebase.database().ref('chats/' + currentChat + '/' + key).set({
+    user: currentUser,
+    text: text,
+    timestamp: Date.now()
+  });
+
+  input.value = '';
+
+  // Immediately refresh messages
+  setTimeout(function(){ loadMessages(); }, 100);
+}
+
+function kickUser(target) {
+  firebase.database().ref('chats/' + currentChat).on('value', function(result){
+    var messages = result || {};
+
+    for(var key in messages){
+      if(messages[key].user === target){
+        firebase.database().ref('chats/' + currentChat + '/' + key).set(null);
+      }
+    }
+    sendSystemMessage(target + ' has been kicked by OWNER!');
+  });
+  input.value = '';
+  return;
+}
+
+// --- LOAD MESSAGES ---
+function loadMessages(){
+  firebase.database().ref('chats/' + currentChat).on('value', function(result){
+    var data = result || {};
+    var msgs = [];
+
+    for(var key in data){
+      msgs.push({
+        key: key,
+        user: data[key].user,
+        text: data[key].text,
+        timestamp: data[key].timestamp,
+        file: data[key].file,
+        fileName: data[key].fileName
+      });
+    }
+
+    msgs.sort(function(a, b){ return a.timestamp - b.timestamp; });
+
+    var box = document.getElementById('chatBox');
+    var shouldScroll = (box.scrollHeight - box.scrollTop - box.clientHeight) < 100;
+
+    box.innerHTML = '';
+
+    for(var i = 0; i < msgs.length; i++){
+      var m = msgs[i];
+      var div = document.createElement('div');
+
+      if(m.user === 'SYSTEM'){
+        div.className = 'msg system';
+        div.innerHTML = m.text;
+      } else {
+        div.className = 'msg ' + (m.user === currentUser ? 'self' : 'other');
+
+        var content = '<b>' + m.user + '</b>: ' + m.text;
+
+        if(m.file){
+          var safeFileName = (m.fileName || 'download').replace(/'/g, '&#39;');
+          content += '<div class="file-attachment">📎 <b>' + (m.fileName || 'File') + '</b><br>';
+
+          // Show image preview if it's an image
+          if(m.file.startsWith('data:image/')){
+            content += '<img src="' + m.file + '" class="file-preview" onclick="window.open(this.src)" title="Click to open"><br>';
+          }
+
+          content += '<a href="' + m.file + '" download="' + safeFileName + '" class="download-btn">⬇️ Download</a></div>';
+        }
+
+        content += '<time>' + new Date(m.timestamp).toLocaleTimeString() + '</time>';
+        div.innerHTML = content;
+      }
+
+      box.appendChild(div);
+    }
+
+    if(shouldScroll || msgs.length !== lastMessageCount){
+      box.scrollTop = box.scrollHeight;
+    }
+
+    lastMessageCount = msgs.length;
+  });
+}
+
+// --- FILE UPLOAD ---
+function uploadFile(e){
+  var f = e.target.files[0];
+  if(!f) return;
+
+  if(f.size > 5 * 1024 * 1024){
+    alert("❌ File is too large! Max size is 5MB.");
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function() {
+    sendMessageWithFile(f.name, reader.result);
+  };
+  reader.readAsDataURL(f);
+
+  // Reset file input
+  document.getElementById('fileInput').value = '';
+}
+
+function sendMessageWithFile(fileName, fileData){
+  if(bannedUsers[currentUser]){
+    alert("❌ You are banned from sending messages.");
+    return;
+  }
+
+  var key = Date.now().toString() + '_' + Math.random().toString(36).substr(2, 9);
+  firebase.database().ref('chats/' + currentChat + '/' + key).set({
+    user: currentUser,
+    text: 'Shared a file: ' + fileName,
+    file: fileData,
+    fileName: fileName,
+    timestamp: Date.now()
+  });
+
+  // Immediately refresh messages
+  setTimeout(function(){ loadMessages(); }, 100);
+}
+
+// --- CLEAR CHAT ---
+function clearChat(){
+  if(!adminUsers.includes(currentUser)){
+    alert("❌ Only OWNER can clear the chat!");
+    return;
+  }
+  if(confirm("Are you sure you want to clear this chat?")){
+    firebase.database().ref('chats/' + currentChat).set('');
+    firebase.database().ref('chats/' + currentChat).set(null);
+    // sendSystemMessage("Chat cleared by OWNER!");
+  }
+}
+
+// --- SYSTEM MESSAGE ---
+function sendSystemMessage(text){
+  var key = Date.now().toString() + '_sys_' + Math.random().toString(36).substr(2, 9);
+  firebase.database().ref('chats/' + currentChat + '/' + key).set({
+    user: 'SYSTEM',
+    text: '<em>🔔 ' + text + '</em>',
+    timestamp: Date.now()
+  });
+}
+
+// --- ACCOUNT PANEL ---
+function openAccountPanel(){
+  document.getElementById('accountPanel').style.display = 'flex';
+  document.getElementById('accName').innerText = currentUser;
+  document.getElementById('accDesc').innerText = currentDesc;
+  loadFriends();
+}
+
+function closeAccountPanel(){
+  document.getElementById('accountPanel').style.display = 'none';
+}
+
+function addFriend(){
+  var friend = document.getElementById('addUserInput').value.trim();
+  if(!friend) return;
+
+  firebase.database().ref('users/' + friend).on('value', function(result){
+    var userData = result;
+
+    if(userData && userData.password){
+      firebase.database().ref('users/' + currentUser + '/friends/' + friend).set(true);
+      alert(friend + ' added!');
+      document.getElementById('addUserInput').value = '';
+      loadFriends();
+    } else {
+      alert('User not found!');
+    }
+  });
+}
+
+function loadFriends(){
+  firebase.database().ref('users/' + currentUser + '/friends').on('value', function(result){
+    var friends = result || {};
+
+    var list = document.getElementById('friendsList');
+    list.innerHTML = '';
+
+    var hasFriends = false;
+    for(var f in friends){
+      hasFriends = true;
+      var li = document.createElement('li');
+      li.innerText = f;
+      list.appendChild(li);
+    }
+
+    if(!hasFriends){
+      list.innerHTML = '<li style="background:transparent;">No friends yet</li>';
+    }
+  });
+}
+
+function shareProfile(){
+  var url = location.href.split('?')[0] + '?user=' + currentUser;
+  prompt("Share this link:", url);
+}
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', function() {
+  if(currentUser){
+    sendSystemMessage(currentUser + ' left the chat!');
+  }
+});
+</script>
+</body>
+</html>

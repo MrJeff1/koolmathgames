@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KoolMathGames - Feedback</title>
+<link rel="icon" type="image/png" href="https://codehs.com/uploads/4928ba975053bd362620fa73767040bf">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8750716083189060" crossorigin="anonymous"></script>
+<script>
+  (function() {
+    emailjs.init("qleW0OVD_z6YmDmvC"); // replace with your EmailJS user ID
+  })();
+</script>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    padding-bottom: 40px;
+    color: #e0f0ff;
+    background: linear-gradient(-45deg, #0044cc, #3366ff, #0033cc, #66ccff);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  h1 {
+    margin-top: 40px;
+    font-size: 50px;
+    color: #e6ffe6;
+    text-shadow: 0 0 10px rgba(0,0,0,0.4);
+  }
+  .dashboard-card {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 30px 50px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(10px);
+      margin-top: 30px;
+      transition: 0.3s ease;
+      animation: fadeIn 0.6s ease;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  .dashboard-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+  }
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+  form { display: flex; flex-direction: column; gap: 15px; }
+  input, textarea {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    width: 100%;
+  }
+  textarea { resize: vertical; min-height: 120px; }
+  .submit-button {
+    padding: 12px 28px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg,#0066ff,#3399ff);
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .submit-button:hover {
+    background: linear-gradient(135deg,#00ffff,#33ffff);
+    transform: scale(1.08);
+    box-shadow: 0 0 20px #00ff88;
+  }
+  .link-button {
+      display: inline-block;
+      margin: 10px 8px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #0066ff, #3399ff);
+      color: #fff;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .link-button:hover {
+      background: linear-gradient(135deg, #00ffff, #33ffff);
+      transform: scale(1.08);
+      box-shadow: 0 0 20px #00ff88;
+    }
+  footer {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #ccffcc;
+  }
+  footer a { color: #00ffcc; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>Feedback</h1>
+
+<div class="dashboard-card">
+  <p>Send me your feedback! I’ll receive it directly in my Gmail.</p>
+  <form id="feedback-form">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="email" name="email" placeholder="Your Email" required>
+    <input type="time" name="time" placeholder="Time (optional)">
+    <textarea name="message" placeholder="Your Feedback" required></textarea>
+    <button type="submit" class="submit-button">Send Feedback</button>
+    <a href="https://koolmathgames.site" class="link-button">⬅ Home</a>
+  </form>
+  <p id="status-message" style="margin-top:10px;"></p>
+</div>
+
+<footer>
+  <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-8750716083189060"
+      data-ad-slot="7956244502"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+</footer>
+
+<script>
+document.getElementById('feedback-form').addEventListener('submit', function(event){
+  event.preventDefault();
+  const status = document.getElementById('status-message');
+  status.textContent = null;
+  emailjs.sendForm('service_iwq33kp','template_286hx19',this)
+  .then(() => {
+    status.textContent = 'Feedback sent! Thank you 😊';
+    status.style.color = '#00ff88';
+    this.reset();
+  }, (err) => {
+    status.textContent = 'Failed to send feedback. Try again later.';
+    status.style.color = '#ff5555';
+    console.error(err);
+  });
+});
+</script>
+<script>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+</html>
