@@ -11,7 +11,7 @@ const staticDir = path.join(__dirname, "static");
 // Serve assets first
 app.use(express.static(publicDir));
 app.use(express.static(staticDir));
-/*
+
 function sendIfExists(res, file) {
     if (fs.existsSync(file) && fs.statSync(file).isFile()) {
         res.sendFile(file);
@@ -56,7 +56,7 @@ app.use((req, res) => {
     }
 
     res.status(404).send("404 – Page not found");
-});*/
+});
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`✔ Server listening on port ${PORT}`);
