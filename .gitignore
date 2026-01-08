@@ -1,1 +1,7 @@
 node_modules/
+
+# large game assets (do not store in git)
+*.sb3
+*.wasm
+*.data
+*.unx
